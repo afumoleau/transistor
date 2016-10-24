@@ -1,0 +1,17 @@
+{
+  "name": "transistor",
+  "version": "0.1.0",
+  "description": "A smart home interface for the Raspberry PI",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alix Fumoleau <alix.fumoleau@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0",
+    "influx": "^4.2.3",
+    "node-fetch": "^1.6.3",
+    "ping": "^0.2.1"
+  }
+}
