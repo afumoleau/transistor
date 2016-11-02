@@ -9,6 +9,7 @@
   "author": "Alix Fumoleau <alix.fumoleau@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "chart.js": "^2.3.0",
     "express": "^4.14.0",
     "influx": "^4.2.3",
     "node-fetch": "^1.6.3",
