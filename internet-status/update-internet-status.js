@@ -2,7 +2,7 @@ var influx = require('influx');
 var fetch = require('node-fetch');
 var timers = require('timers');
 
-var client = influx({hosts: [{host: 'localhost', database:'transistor'}]});
+var client = new influx.InfluxDB({hosts: [{host: 'localhost', database:'transistor'}]});
 
 timers.setInterval(fetchURL, 30000);
 
