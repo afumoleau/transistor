@@ -2,32 +2,25 @@ var influx = require('influx');
 var fetch = require('node-fetch');
 var timers = require('timers');
 
-var client = new influx.InfluxDB({hosts: [{host: 'localhost', database:'transistor'}]});
+var db = new influx.InfluxDB({host: '192.168.0.16', database:'transistor'});
 
 timers.setInterval(fetchURL, 30000);
+fetchURL();
 
 function fetchURL() {
-    fetch('http://google.com')
-        .then(function (res) {
-            if(res.status === 200) {
-                registerSuccess();
-            } else {
-                registerFailure();
-            }
-        })
+    fetch('https://www.google.com')
+        .then(getStatusFromResponse)
+        .then(registerStatus)
         .catch(function(err) {
-            registerFailure();
+            registerStatus(0);
         });
 }
 
-function registerSuccess() {
-    client.writePoint('internet', 1.0, [], {db:'transistor'}, function (err) {
-        console.log(err);
-    });
+function getStatusFromResponse(res) {
+    return res.status === 200 ? 1 : 0;
 }
 
-function registerFailure() {
-    client.writePoint('internet', 0.0, [], {db:'transistor'}, function (err) {
-        console.log(err);
-    });
+function registerStatus(value) {
+    db.writePoints([{measurement:'internet', fields:{ value: value }}])
+        .catch(function(err) { console.log(err); });
 }
