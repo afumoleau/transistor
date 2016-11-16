@@ -1,33 +1,29 @@
-var influx = require('influx');
-var fetch = require('node-fetch');
-var timers = require('timers');
-
-var client = influx({hosts: [{host: '192.168.0.16', database:'transistor'}]});
-
-timers.setInterval(fetchURL, 1000);
-
-function fetchURL() {
-    fetch('http://google.com')
-        .then(function (res) {
-            if(res.status === 200) {
-                registerSuccess();
-            } else {
-                registerFailure();
+window.onload = function() {
+    fetch("http://localhost/api/internet-status")
+       .then(function(res) {
+            return res.json()
+        }).then(function(data) {
+            console.log('parsed json', data)
+            var myChart = new Chart(document.getElementById("internetChart"), {
+            type: 'line',
+            data: {
+                labels: _.map(data, 'time'),
+                datasets: [{
+                    label: 'Internet Status',
+                    data: _.map(data, 'value'),
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
             }
-        })
-        .catch(function(err) {
-            registerFailure();
         });
-}
-
-function registerSuccess() {
-    client.writePoint('internet', 1.0, [], {db:'transistor'}, function (err) {
-        console.log(err);
-    });
-}
-
-function registerFailure() {
-    client.writePoint('internet', 0.0, [], {db:'transistor'}, function (err) {
-        console.log(err);
-    });
-}
+        });
+    /*
+    */
+};

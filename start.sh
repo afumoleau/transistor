@@ -9,5 +9,6 @@ cd ..
 # web-interface module
 cd web-interface
 npm install
+webpack
 forever start server.js
 cd ..
