@@ -7,7 +7,16 @@ var app = express();
 
 app.get('/api/internet-status', function(req, res) {
     res.setHeader('Content-Type', 'application/json');
-    db.query(`select * from internet order by time desc limit 20`)
+    
+    var interval = parseInt(req.query.interval) || (60*60*1000);
+    var samples = parseInt(req.query.samples) || (24);
+    var to = new Date();
+    var from = new Date(to - interval*samples);
+
+    db.query(`SELECT MEAN(value) AS value
+              FROM internet WHERE time >= '${from.toISOString()}'
+              AND time <= '${to.toISOString()}'
+              GROUP BY time(${interval}ms)`)
         .then(rows => { res.send(JSON.stringify(rows)); });
 });
 
