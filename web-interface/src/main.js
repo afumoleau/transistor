@@ -1,5 +1,5 @@
 window.onload = function() {
-    fetch("http://localhost/api/internet-status")
+    fetch("http://192.168.0.16/api/internet-status")
        .then(function(res) {
             return res.json()
         }).then(function(data) {
