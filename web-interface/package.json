@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.14.0",
-    "influx": "^5.0.1"
+    "influx": "^5.0.1",
+    "node-hue-api": "^2.3.0"
   }
 }

@@ -1,11 +1,21 @@
 <html>
     <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
         <link rel="stylesheet" href="style.css">
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
         <script src="https://cdn.jsdelivr.net/lodash/4.17.1/lodash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
         <script src="app.js"></script>
     </head>
     <body>
-        <canvas id="internetChart" width="400" height="400" style="max-width : 400px; max-height : 400px;"></canvas>
+      <div class="container">
+        <canvas id="internetChart" width="600" height="400" style="max-width : 600px; max-height : 400px;"></canvas>
+        <button class="waves-effect waves-light btn" id="b1">1 Day</button>
+        <button class="waves-effect waves-light btn" id="b2">1 Hour</button>
+        <br />
+        <br />
+        <button class="waves-effect waves-light btn" id="b3">Turn off TV Light</button>
+      </div>
     </body>
 </html>
