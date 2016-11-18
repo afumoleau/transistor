@@ -1,13 +1,13 @@
 window.onload = function() {
     function getInternetStatusData(interval, samples) {
-        return fetch(`http://localhost/api/internet-status?interval=${interval}&samples=${samples}`)
+        return fetch(`/api/internet-status?interval=${interval}&samples=${samples}`)
             .then(function(res) {
                 return res.json()
             });
     }
 
     function turnOffTVLight() {
-        return fetch(`http://localhost/api/lights`);
+        return fetch(`/api/lights`);
     }
 
     function convertTime(obj) {
