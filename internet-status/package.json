@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "influx": "^5.0.1",
+    "lodash": "^4.17.2",
     "node-fetch": "^1.6.3",
     "ping": "^0.2.1"
   }
