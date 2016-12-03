@@ -1,6 +1,27 @@
 <template>
 	<div id="lights-manager">
-		<button class="waves-effect waves-light btn" v-on:click="turnOffTVLight">Turn off TV Light</button>
+		<div class="collection">
+			<div class="collection-item light" v-for="light in lights">
+				<div class="name" v-on:click="toggleLight(light)">
+					<i class="material-icons">lightbulb_outline</i>
+					<div>{{light.name}}</div>
+				</div>
+				<div class="param" v-if="light.state.bri != null">
+					<i class="material-icons">brightness_medium</i>
+					<input class="brightness" type="range" min="0" max="255" v-model="light.state.bri" v-on:change="updateBri(light)" />
+				</div>
+				<div class="param" v-if="light.state.hue != null">
+					<i class="material-icons">color_lens</i>
+					<input class="brightness" type="range" min="0" max="65535" v-model="light.state.hue" v-on:change="updateHue(light)" />
+				</div>
+				<div class="param" v-if="light.state.ct != null">
+					<i class="material-icons">whatshot</i>
+					<input class="brightness" type="range" min="153" max="500" v-model="light.state.ct" v-on:change="updateCT(light)" />
+				</div>
+				<!--<button class="waves-effect waves-light btn" v-on:click="turnOff(light)">Off</button>
+				<button class="waves-effect waves-light btn" v-on:click="turnOn(light)">On</button>-->
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -9,13 +30,74 @@
 
 	export default {
 		name: 'lights-manager',
+		data: function() {
+			return {
+				lights: []
+			};
+		},
+		created() {
+			var vm = this;
+			this.getLights().then(function(lights) {
+				console.log(lights);
+				vm.lights.splice(0, vm.lights.length, ...lights);
+			});
+		},
 		methods: {
-			turnOffTVLight() {
-				return fetch(`${config.api}/lights`);
+			getLights() {
+				return fetch(`${config.api}/lights`).then(function(response) { return response.json(); });
+			},
+			updateLight(light, state) {
+				return fetch(`${config.api}/lights/${light.id}`, {method: 'POST', body: JSON.stringify(state)});
+			},
+			toggleLight(light) {
+				light.state.on = !light.state.on;
+				light.bri = light.state.on ? 255 : 0;
+				this.updateLight(light, { on: light.state.on, bri: light.state.bri });
+			},
+			updateBri(light) {
+				light.state.on = (light.state.bri > 0);
+				this.updateLight(light, { on: light.state.on, bri: light.state.bri });
+			},
+			updateHue(light) {
+				this.updateLight(light, { hue: light.state.hue });
+			},
+			updateCT(light) {
+				this.updateLight(light, { ct: light.state.ct });
 			}
 		}
 	};
 </script>
 
-<style>
+<style lang="less" scoped>
+.light {
+	padding : 10px;
+	display: flex;
+	align-items: center;
+	
+	.name {
+		width: 7em;
+		flex-shrink: 0;
+		flex-grow: 0;
+		cursor: pointer;
+		display: flex;
+	}
+	.param {
+		display:flex;
+		flex-grow: 1;
+	}
+	.brightness {
+		margin: 0px 5px;
+	}
+	.btn {
+		margin: 0px 5px;
+		flex-shrink : 0;
+		&:last-child {
+			margin-right: 0px;
+		}
+	}
+	input[type="range"]::-webkit-slider-thumb {
+		background-color : white;
+		box-shadow : 0px 1px 5px rgba(0,0,0,0.5);
+	}
+}
 </style>

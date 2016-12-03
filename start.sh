@@ -19,9 +19,15 @@ npm install
 sudo forever start update-internet-status.js
 cd ..
 
-# web-interface module
-cd web-interface
+# web-api module
+cd web-api
 npm install
-webpack
+sudo forever start server.js
+cd ..
+
+# web-front module
+cd web-front
+npm install
+npm run build
 sudo forever start server.js
 cd ..
