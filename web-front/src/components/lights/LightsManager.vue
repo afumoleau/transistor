@@ -6,20 +6,18 @@
 					<i class="material-icons">lightbulb_outline</i>
 					<div>{{light.name}}</div>
 				</div>
-				<div class="param" v-if="light.state.bri != null">
+				<div class="param brightness" :disabled="light.state.bri == undefined">
 					<i class="material-icons">brightness_medium</i>
-					<input class="brightness" type="range" min="0" max="255" v-model="light.state.bri" v-on:change="updateBri(light)" />
+					<input type="range" min="0" max="255" v-model="light.state.bri" v-on:change="updateBri(light)" :disabled="light.state.bri == undefined" />
 				</div>
-				<div class="param" v-if="light.state.hue != null">
+				<div class="param hue" :disabled="light.state.hue == undefined">
 					<i class="material-icons">color_lens</i>
-					<input class="brightness" type="range" min="0" max="65535" v-model="light.state.hue" v-on:change="updateHue(light)" />
+					<input type="range" min="0" max="65535" v-model="light.state.hue" v-on:change="updateHue(light)" :disabled="light.state.hue == undefined" />
 				</div>
-				<div class="param" v-if="light.state.ct != null">
+				<div class="param ct" :disabled="light.state.ct == undefined">
 					<i class="material-icons">whatshot</i>
-					<input class="brightness" type="range" min="153" max="500" v-model="light.state.ct" v-on:change="updateCT(light)" />
+					<input type="range" min="153" max="500" v-model="light.state.ct" v-on:change="updateCT(light)" :disabled="light.state.ct == undefined" />
 				</div>
-				<!--<button class="waves-effect waves-light btn" v-on:click="turnOff(light)">Off</button>
-				<button class="waves-effect waves-light btn" v-on:click="turnOn(light)">On</button>-->
 			</div>
 		</div>
 	</div>
@@ -84,6 +82,28 @@
 	.param {
 		display:flex;
 		flex-grow: 1;
+		align-items: center;
+
+		&[disabled] {
+			opacity: 0.1;
+		}
+		&.hue {
+			input[type=range]::-webkit-slider-runnable-track {
+				background:linear-gradient(to right,red,orange,yellow,green,blue,indigo,violet,red);
+			}
+		}
+		&.ct {
+			input[type=range]::-webkit-slider-runnable-track {
+				background:linear-gradient(to right,#AACCFF,#FFFFFF,#FFCCAA);
+			}
+		}
+		input[type="range"]::-webkit-slider-thumb {
+			background-color : white;
+			box-shadow : 0px 1px 5px rgba(0,0,0,0.5);
+		}
+		input[type=range]::-webkit-slider-runnable-track {
+			border-radius: 100px;
+		}
 	}
 	.brightness {
 		margin: 0px 5px;
@@ -94,10 +114,6 @@
 		&:last-child {
 			margin-right: 0px;
 		}
-	}
-	input[type="range"]::-webkit-slider-thumb {
-		background-color : white;
-		box-shadow : 0px 1px 5px rgba(0,0,0,0.5);
 	}
 }
 </style>
