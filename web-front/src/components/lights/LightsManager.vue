@@ -36,7 +36,6 @@
 		created() {
 			var vm = this;
 			this.getLights().then(function(lights) {
-				console.log(lights);
 				vm.lights.splice(0, vm.lights.length, ...lights);
 			});
 		},
