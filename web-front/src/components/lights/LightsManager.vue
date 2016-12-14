@@ -20,11 +20,15 @@
 				</div>
 			</div>
 		</div>
+		<div class="actions">
+			<a class="btn" v-on:click="turnOffAllLights()">Turn Off all lights</a>
+		</div>
 	</div>
 </template>
 
 <script>
 	import config from '../../config';
+	import _ from 'lodash';
 
 	export default {
 		name: 'lights-manager',
@@ -60,7 +64,16 @@
 			},
 			updateCT(light) {
 				this.updateLight(light, { ct: light.state.ct });
+			},
+			turnOffAllLights() {
+				console.log('test');
+				_.forEach(this.lights, this.turnOff);
+			},
+			turnOff(light) {
+				light.state.on = false;
+				this.updateLight(light, { on: light.state.on });
 			}
+
 		}
 	};
 </script>
@@ -114,5 +127,9 @@
 			margin-right: 0px;
 		}
 	}
+}
+.actions {
+	display: flex;
+	justify-content: flex-end;
 }
 </style>
