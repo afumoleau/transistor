@@ -1,8 +1,7 @@
 <template>
 	<div id="internet-status">
-		<chartjs-line :beginzero="true" :data="chart.data" :labels="chart.labels" :bind="true"></chartjs-line>
-		<button class="waves-effect waves-light btn" v-on:click="refreshChart(3600000, 24)">1 Day</button>
-		<button class="waves-effect waves-light btn" v-on:click="refreshChart(120000, 30)">1 Hour</button>
+		<chartjs-line :datalabel="'INTERNET STATUS'" :fill="true" :beginzero="true" :data="chart.data" :labels="chart.labels" :bind="true"></chartjs-line>
+		<input type="range" min="0" max="5" v-model="timeResolution" v-on:change="refreshChart()" />
 	</div>
 </template>
 
@@ -13,19 +12,31 @@
 	export default {
 		name: 'internet-status',
 		created: function () {
-			this.refreshChart(3600000, 24);
+			this.refreshChart();
 		},
 		data: function() {
 			return {
 				chart: {
-					data: [1, 2, 3, 4],
-					labels: ['a', 'b', 'c', 'd']
+					data: [],
+					labels: []
 				},
-				totalDuration: 0
+				totalDuration: 0,
+				timeResolution: 4
 			};
 		},
 		methods: {
 			refreshChart(interval, samples) {
+				if (!interval) {
+					switch (parseInt(this.timeResolution)) {
+					case 0 /* Last Year */ : interval = 1314000000; samples = 24; break;
+					case 1 /* Last Month */ : interval = 86400000; samples = 30; break;
+					case 2 /* Last Week */ : interval = 25200000; samples = 24; break;
+					case 3 /* Last Day */ : interval = 3600000; samples = 24; break;
+					case 4 /* Last Hour */ : interval = 120000; samples = 30; break;
+					case 5 /* Last 12 minutes */ : interval = 30000; samples = 24; break;
+					}
+				}
+
 				this.totalDuration = interval * samples;
 				return this.getInternetStatusData(interval, samples).then(this.displayChart);
 			},
@@ -37,7 +48,9 @@
 
 			convertTime: function(obj) {
 				var date = new Date(obj.time);
-				if (this.totalDuration > 86400000) {
+				if (this.totalDuration > 2073600000) {
+					return date.toLocaleDateString();
+				} else if (this.totalDuration > 86400000) {
 					return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 				} else {
 					return date.toLocaleTimeString();
