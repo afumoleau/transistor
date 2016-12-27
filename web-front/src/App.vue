@@ -6,22 +6,22 @@
 		<h1>Lights</h1>
 		<lights-manager></lights-manager>
 
-		<h1>Devices</h1>
-		<device-manager></device-manager>
+		<h1>Power</h1>
+		<power-manager></power-manager>
 	</div>
 </template>
 
 <script>
 	import InternetStatus from './components/internet/InternetStatus';
 	import LightsManager from './components/lights/LightsManager';
-	import DeviceManager from './components/devices/DeviceManager';
+	import PowerManager from './components/power/PowerManager';
 
 	export default {
 		name: 'app',
 		components: {
 			InternetStatus,
 			LightsManager,
-			DeviceManager
+			PowerManager
 		}
 	};
 </script>
