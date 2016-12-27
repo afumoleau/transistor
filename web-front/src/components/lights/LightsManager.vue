@@ -66,7 +66,6 @@
 				this.updateLight(light, { ct: light.state.ct });
 			},
 			turnOffAllLights() {
-				console.log('test');
 				_.forEach(this.lights, this.turnOff);
 			},
 			turnOff(light) {

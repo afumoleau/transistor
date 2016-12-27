@@ -4,8 +4,8 @@
 		<chartjs-line target="shortterm" :datalabel="'Puissance'" :fill="true" :beginzero="true" :data="chart.pApp" :labels="chart.labels" :bind="true"></chartjs-line>
 		<chartjs-line target="shortterm" :datalabel="'Intensité'" :fill="true" :beginzero="true" :data="chart.iInst" :labels="chart.labels" :bind="true"></chartjs-line>
 		<canvas id="longterm" count="2"></canvas>
-		<chartjs-line target="longterm" :datalabel="'Heures Pleines'" :beginzero="true" :data="chart.indexHC" :labels="chart.labels" :bind="true":bordercolor="'#ff5722'" :backgroundcolor="'rgba(255, 87, 34, 0.5)'"></chartjs-line>
-		<chartjs-line target="longterm" :datalabel="'Heures Creuses'" :fill="true" :beginzero="true" :data="chart.indexHP" :labels="chart.labels" :bind="true":bordercolor="'#03a9f4'" :backgroundcolor="'rgba(3, 169, 244, 0.5)'"></chartjs-line>
+		<chartjs-line target="longterm" :datalabel="'Heures Pleines'" :fill="true" :beginzero="true" :data="chart.indexHP" :labels="chart.labels" :bind="true":bordercolor="'#ff5722'" :backgroundcolor="'rgba(255, 87, 34, 0.5)'"></chartjs-line>
+		<chartjs-line target="longterm" :datalabel="'Heures Creuses'" :beginzero="true" :data="chart.indexHC" :labels="chart.labels" :bind="true":bordercolor="'#03a9f4'" :backgroundcolor="'rgba(3, 169, 244, 0.5)'"></chartjs-line>
 		<input type="range" min="0" max="5" v-model="timeResolution" v-on:change="refreshChart()" />
 	</div>
 </template>
