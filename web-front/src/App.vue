@@ -1,12 +1,9 @@
 <template>
-	<div id="app" class="container">
-		<h1>Internet</h1>
+	<div id="app">
 		<internet-status></internet-status>
 
-		<h1>Lights</h1>
 		<lights-manager></lights-manager>
 
-		<h1>Power</h1>
 		<power-manager></power-manager>
 	</div>
 </template>

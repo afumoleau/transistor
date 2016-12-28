@@ -1,5 +1,6 @@
 <template>
-	<div id="lights-manager">
+	<div id="lights-manager" class="container">
+		<h1>LIGHTS</h1>
 		<div class="collection">
 			<div class="collection-item light" v-for="light in lights">
 				<div class="name" v-on:click="toggleLight(light)">
@@ -78,6 +79,11 @@
 </script>
 
 <style lang="less" scoped>
+h1 {
+	font-size : 2em;
+	text-align: center;
+	margin: 10px 0px;
+}
 .light {
 	padding : 10px;
 	display: flex;
@@ -130,5 +136,6 @@
 .actions {
 	display: flex;
 	justify-content: flex-end;
+	margin:10px 0px;
 }
 </style>

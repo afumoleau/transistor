@@ -2,23 +2,21 @@ var influx = require('influx');
 
 var db = new influx.InfluxDB({host: 'localhost', database:'transistor'});
 
-function getInternetStatus(interval, samples) {
-	var to = new Date();
-	var from = new Date(to - interval*samples);
-
+function getInternetStatus(from, to, samples) {
 	return db.query(`SELECT MEAN(value) AS value
 		FROM internet WHERE time >= '${from.toISOString()}'
 		AND time <= '${to.toISOString()}'
-		GROUP BY time(${interval}ms)`);
+		GROUP BY time(${Math.round((to-from)/samples)}ms)`);
 };
 
 module.exports = {
 	init(app) {
 		app.get('/internet-status', function(req, res) {
 			res.setHeader('Content-Type', 'application/json');
-			var interval = parseInt(req.query.interval) || (60*60*1000);
-			var samples = parseInt(req.query.samples) || (24);
-			getInternetStatus(interval, samples).then(res.json.bind(res));
+			var from = new Date(parseInt(req.query.from));
+			var to = new Date(parseInt(req.query.to));
+			var samples = parseInt(req.query.samples) || (100);
+			getInternetStatus(from, to, samples).then(res.json.bind(res));
 		});
 	}
 }
