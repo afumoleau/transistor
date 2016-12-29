@@ -160,6 +160,7 @@
 			flex-grow : 1;
 			box-shadow:none;
 			border-right:1px solid #e0e0e0;
+			padding:0px 5px;
 			&:last-child {
 				border-right:0px;
 			}
