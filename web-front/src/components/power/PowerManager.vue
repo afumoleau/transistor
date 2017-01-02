@@ -42,6 +42,12 @@
 					:bordercolor="'rgb(76, 175, 80)'">
 				</chartjs-line>
 			</div>
+
+			<div class="consumption green-text">
+				<div>Heures Pleines : {{consumption.hp.toFixed(0)}}kWh (<span class="cost">{{consumption.hpCost.toFixed(2)}}€</span>)</div>
+				<div>Heures Creuses : {{consumption.hc.toFixed(0)}}kWh (<span class="cost">{{consumption.hcCost.toFixed(2)}}€</span>)</div>
+				<div>Total : {{consumption.total.toFixed(0)}}kWh (<span class="cost">{{consumption.totalCost.toFixed(2)}}€</span> / BASE: {{consumption.totalCostBase.toFixed(2)}}€)</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -75,20 +81,29 @@
 				from: moment(),
 				to: moment(),
 				samples: 100,
-				internetUptimePercentage: 100
+				consumption: {
+					hp: 0,
+					hc: 0,
+					hpCost: 0,
+					hcCost: 0,
+					total: 0,
+					totalCost: 0,
+					totalCostBase: 0
+				}
 			};
 		},
 		methods: {
 			setUnit: function(unit) {
 				this.unit = unit;
 				this.offset = 0;
-				return this.refreshChart();
+				return this.refreshData();
 			},
 			addOffset: function(delta) {
 				this.offset += delta;
-				return this.refreshChart(this.unit);
+				return this.refreshData(this.unit);
 			},
-			refreshChart: function() {
+			refreshData: function() {
+				var self = this;
 				var date = moment().add(this.offset, this.unit);
 				this.from = moment(date).startOf(this.unit);
 				this.to = moment(date).endOf(this.unit);
@@ -96,10 +111,26 @@
 				if (this.unit === 'minute') {
 					this.samples = Math.min(this.samples, 2);
 				}
-				return this.getPowerData(this.form, this.to, this.samples).then(this.displayChart);
+				this.getPowerData(this.form, this.to, this.samples).then(this.displayChart);
+				this.getConsumption(this.form, this.to).then(function(data) {
+					var hp = data[0].indexHP;
+					var hc = data[0].indexHC;
+					self.consumption = {
+						hp: hp / 1000,
+						hc: hc / 1000,
+						hpCost: (hp * 0.000156),
+						hcCost: (hc * 0.000127),
+						total: (hp + hc) / 1000,
+						totalCost: (hp * 0.000156 + hc * 0.000127),
+						totalCostBase: ((hp + hc) * 0.00014620)
+					};
+				});
 			},
-			getPowerData: function(interval, samples) {
+			getPowerData: function(from, to, samples) {
 				return fetch(`${config.api}/power?from=${this.from}&to=${this.to}&samples=${this.samples}`).then(function(res) { return res.json(); });
+			},
+			getConsumption: function(from, to) {
+				return fetch(`${config.api}/consumption?from=${this.from}&to=${this.to}`).then(function(res) { return res.json(); });
 			},
 			convertTime: function(obj) {
 				var date = moment(obj.time);
@@ -153,6 +184,10 @@
 	h1 {
 		font-size: 2em;
 	}
+	.consumption {
+		text-align: center;
+		font-size: 1.2em;
+	}
 	.btn-group {
 		display : flex;
 		box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
@@ -181,86 +216,7 @@
 	.chart {
 		margin-top:10px;
 	}
+	.cost {
+		font-weight: bold;
+	}
 </style>
-
-
-<!--<template>
-	<div id="power-manager">
-		<canvas id="shortterm" count="2"></canvas>
-		<chartjs-line target="shortterm" :datalabel="'Puissance'" :fill="true" :beginzero="true" :data="chart.pApp" :labels="chart.labels" :bind="true"></chartjs-line>
-		<chartjs-line target="shortterm" :datalabel="'Intensité'" :fill="true" :beginzero="true" :data="chart.iInst" :labels="chart.labels" :bind="true"></chartjs-line>
-		<canvas id="longterm" count="2"></canvas>
-		<chartjs-line target="longterm" :datalabel="'Heures Pleines'" :fill="true" :beginzero="true" :data="chart.indexHP" :labels="chart.labels" :bind="true":bordercolor="'#ff5722'" :backgroundcolor="'rgba(255, 87, 34, 0.5)'"></chartjs-line>
-		<chartjs-line target="longterm" :datalabel="'Heures Creuses'" :beginzero="true" :data="chart.indexHC" :labels="chart.labels" :bind="true":bordercolor="'#03a9f4'" :backgroundcolor="'rgba(3, 169, 244, 0.5)'"></chartjs-line>
-		<input type="range" min="0" max="5" v-model="timeResolution" v-on:change="refreshChart()" />
-	</div>
-</template>
-
-<script>
-	import _ from 'lodash';
-	import config from '../../config';
-
-	export default {
-		name: 'power-manager',
-		created: function () {
-			this.refreshChart();
-		},
-		data: function() {
-			return {
-				chart: {
-					iInst: [],
-					pApp: [],
-					indexHC: [],
-					indexHP: [],
-					labels: []
-				},
-				totalDuration: 0,
-				timeResolution: 3
-			};
-		},
-		methods: {
-			refreshChart(interval, samples) {
-				if (!interval) {
-					switch (parseInt(this.timeResolution)) {
-					case 0 /* Last Year */ : interval = 1314000000; samples = 24; break;
-					case 1 /* Last Month */ : interval = 86400000; samples = 30; break;
-					case 2 /* Last Week */ : interval = 25200000; samples = 24; break;
-					case 3 /* Last Day */ : interval = 3600000; samples = 24; break;
-					case 4 /* Last Hour */ : interval = 120000; samples = 30; break;
-					case 5 /* Last minute */ : interval = 2000; samples = 30; break;
-					}
-				}
-
-				this.totalDuration = interval * samples;
-				return this.getPowerData(interval, samples).then(this.displayChart);
-			},
-
-			getPowerData: function(interval, samples) {
-				return fetch(`${config.api}/power?interval=${interval}&samples=${samples}`)
-					.then(function(res) { return res.json(); });
-			},
-
-			convertTime: function(obj) {
-				var date = new Date(obj.time);
-				if (this.totalDuration > 2073600000) {
-					return date.toLocaleDateString();
-				} else if (this.totalDuration > 86400000) {
-					return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-				} else {
-					return date.toLocaleTimeString();
-				}
-			},
-
-			displayChart: function(data) {
-				this.chart.pApp.splice(0, this.chart.pApp.length, ..._.map(data, 'pApp'));
-				this.chart.iInst.splice(0, this.chart.iInst.length, ..._.map(data, 'iInst'));
-				this.chart.indexHC.splice(0, this.chart.indexHC.length, ..._.map(data, 'indexHC'));
-				this.chart.indexHP.splice(0, this.chart.indexHP.length, ..._.map(data, 'indexHP'));
-				this.chart.labels.splice(0, this.chart.labels.length, ..._.map(data, this.convertTime));
-			}
-		}
-	};
-</script>
-
-<style>
-</style>-->
